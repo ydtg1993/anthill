@@ -5,7 +5,7 @@ import (
 	"net"
 )
 
-func (config *ServerConfig)TcpWorker()  {
+func (config *ServerConfig) TcpWorker() {
 	tcpServer, _ := net.ResolveTCPAddr("tcp4", config.Tcp.Pattern+":"+config.Tcp.Port)
 	listener, _ := net.ListenTCP("tcp4", tcpServer)
 
@@ -22,8 +22,14 @@ func (config *ServerConfig)TcpWorker()  {
 	}
 }
 
-func (pool *TcpPool)handle(conn net.Conn)  {
-	sign := RandSign(10)
+func (pool *TcpPool) handle(conn net.Conn) {
+	sign := RandSign(16)
 	pool.Workers[sign] = conn
-}
 
+	for {
+		buffer := make([]byte, 10240)
+		readLen, _ := conn.Read(buffer)
+		message := string(buffer[:readLen])
+
+	}
+}

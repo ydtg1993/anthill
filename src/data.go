@@ -1,6 +1,15 @@
 package src
 
-import "net"
+import (
+	"golang.org/x/net/websocket"
+	"net"
+)
+
+const (
+	NOTICE_EVENT    = "notice"
+	BROADCAST_EVENT = "broadcast"
+	SHUT_EVENT      = "close"
+)
 
 type ServerConfig struct {
 	Tcp       Tcp
@@ -19,4 +28,14 @@ type Websocket struct {
 
 type TcpPool struct {
 	Workers map[string]net.Conn
+}
+
+type WebsocketPool struct {
+	Workers map[string]websocket.Conn
+}
+
+type Information struct {
+	Event   string
+	Token   string
+	Message string
 }
