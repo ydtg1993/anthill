@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func (config *ServerConfig)WebWorker()  {
+func (config *ServerConfig) WebWorker() {
 	http.Handle(config.Websocket.Pattern, websocket.Handler(Echo))
 	if err := http.ListenAndServe(":"+config.Websocket.Port, nil); err != nil {
 		log.Println(err)
@@ -16,13 +16,13 @@ func (config *ServerConfig)WebWorker()  {
 func Echo(ws *websocket.Conn) {
 	for {
 		var raply string
-		if err := websocket.Message.Receive(ws, &raply); err != nil { //get infomation,write in adress
+		if err := websocket.Message.Receive(ws, &raply); err != nil {
 			log.Println("can't receive")
 			break
 		}
 		msg := "Received:" + raply
 		log.Println(msg)
-		if err := websocket.Message.Send(ws, "come back infomation"); err != nil { //send infomation
+		if err := websocket.Message.Send(ws, "come back infomation"); err != nil {
 			log.Println("can't send")
 			break
 		}
