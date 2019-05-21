@@ -44,12 +44,7 @@ func handle(ws *websocket.Conn) {
 		case LOGOUT_EVENT:
 			ws.Close()
 			delete(WPool.Workers, token)
-			//websocket down
-			socket, ok := TPool.Workers[token]
-			if ok {
-				socket.Close()
-				delete(TPool.Workers, token)
-			}
+			return
 		}
 	}
 }
