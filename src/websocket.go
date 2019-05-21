@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func (config *ServerConfig) WebWorker() {
+func WebWorker(config *ServerConfig, tcpPool *TcpPool, websocketPool *WebsocketPool) {
 	http.Handle(config.Websocket.Pattern, websocket.Handler(Echo))
 	if err := http.ListenAndServe(":"+config.Websocket.Port, nil); err != nil {
 		fmt.Println(err)

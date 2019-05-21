@@ -6,11 +6,10 @@ import (
 	"net"
 )
 
-func (config *ServerConfig) TcpWorker() {
+func TcpWorker(config *ServerConfig, tcpPool *TcpPool, websocketPool *WebsocketPool) {
 	tcpServer, _ := net.ResolveTCPAddr("tcp4", config.Tcp.Pattern+":"+config.Tcp.Port)
 	listener, _ := net.ListenTCP("tcp4", tcpServer)
 
-	tcpPool := new(TcpPool)
 	tcpPool.Workers = make(map[string]net.Conn)
 
 	for {
