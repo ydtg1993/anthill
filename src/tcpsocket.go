@@ -18,11 +18,11 @@ func TcpWorker(config *ServerConfig, tcpPool *TcpPool, websocketPool *WebsocketP
 			fmt.Println(err)
 			continue
 		}
-		go tcpPool.handle(conn)
+		go tcpHandle(conn, tcpPool, websocketPool)
 	}
 }
 
-func (pool *TcpPool) handle(conn net.Conn) {
+func tcpHandle(conn net.Conn, tcpPool *TcpPool, websocketPool *WebsocketPool) {
 	for {
 		information := *new(Information)
 		buffer := make([]byte, 10240)
@@ -35,16 +35,32 @@ func (pool *TcpPool) handle(conn net.Conn) {
 
 		json.Unmarshal(buffer[:readLen], &information)
 		token := information.Token
+		message := information.Message
 		switch information.Event {
 		case NOTICE_EVENT:
-
+			websocket, ok := websocketPool.Workers[token]
+			if ok {
+				websocket.Write([]byte(message))
+			}
 		case BROADCAST_EVENT:
-
+			for _, websocket := range websocketPool.Workers {
+				websocket.Write([]byte(message))
+			}
 		case REGISTER_EVENT:
-			pool.Workers[token] = conn
+			tcpPool.Workers[token] = conn
+			websocket, ok := websocketPool.Workers[token]
+			if ok {
+				websocket.Write([]byte(message))
+			}
 		case LOGOUT_EVENT:
-			delete(pool.Workers, token)
+			delete(tcpPool.Workers, token)
 			conn.Close()
+			//websocket down
+			websocket, ok := websocketPool.Workers[token]
+			if ok {
+				websocket.Close()
+				delete(websocketPool.Workers, token)
+			}
 		}
 	}
 }

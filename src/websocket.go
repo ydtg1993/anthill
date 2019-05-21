@@ -7,13 +7,13 @@ import (
 )
 
 func WebWorker(config *ServerConfig, tcpPool *TcpPool, websocketPool *WebsocketPool) {
-	http.Handle(config.Websocket.Pattern, websocket.Handler(Echo))
+	http.Handle(config.Websocket.Pattern, websocket.Handler(handle))
 	if err := http.ListenAndServe(":"+config.Websocket.Port, nil); err != nil {
 		fmt.Println(err)
 	}
 }
 
-func Echo(ws *websocket.Conn) {
+func handle(ws *websocket.Conn) {
 	for {
 		var message string
 		if err := websocket.Message.Receive(ws, &message); err != nil {

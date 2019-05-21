@@ -39,5 +39,4 @@ type Information struct {
 	Event   string
 	Token   string
 	Message string
-	Data    map[string]interface{}
 }
