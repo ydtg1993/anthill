@@ -10,8 +10,6 @@ func TcpWorker(config *ServerConfig) {
 	tcpServer, _ := net.ResolveTCPAddr("tcp4", config.Tcp.Pattern+":"+config.Tcp.Port)
 	listener, _ := net.ListenTCP("tcp4", tcpServer)
 
-	TPool.Workers = make(map[string]net.Conn)
-
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
@@ -38,7 +36,7 @@ func tcpHandle(conn net.Conn) {
 		message := information.Message
 		switch information.Event {
 		case NOTICE_EVENT:
-			websocket, ok := TPool.Workers[token]
+			websocket, ok := WPool.Workers[token]
 			if ok {
 				websocket.Write([]byte(message))
 			}
@@ -61,6 +59,7 @@ func tcpHandle(conn net.Conn) {
 				websocket.Close()
 				delete(WPool.Workers, token)
 			}
+			return
 		}
 	}
 }

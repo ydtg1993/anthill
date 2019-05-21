@@ -32,7 +32,7 @@ type TcpPool struct {
 }
 
 type WebsocketPool struct {
-	Workers map[string]websocket.Conn
+	Workers map[string]*websocket.Conn
 }
 
 type Information struct {
