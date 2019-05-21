@@ -40,6 +40,16 @@ func tcpHandle(conn net.Conn) {
 			websocket, ok := WPool.Workers[token]
 			if ok {
 				websocket.Write([]byte(message))
+			} else {
+				information := Information{
+					Event:   "close",
+					Token:   token,
+					Message: "websocket closed",
+				}
+				message, err := json.Marshal(information)
+				if err == nil {
+					conn.Write(message)
+				}
 			}
 		case BROADCAST_EVENT:
 			for _, websocket := range WPool.Workers {
