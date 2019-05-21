@@ -1,6 +1,7 @@
 package src
 
 import (
+	"encoding/json"
 	"fmt"
 	"net"
 )
@@ -23,13 +24,28 @@ func (config *ServerConfig) TcpWorker() {
 }
 
 func (pool *TcpPool) handle(conn net.Conn) {
-	sign := RandSign(16)
-	pool.Workers[sign] = conn
-
 	for {
+		information := *new(Information)
 		buffer := make([]byte, 10240)
-		readLen, _ := conn.Read(buffer)
-		message := string(buffer[:readLen])
+		readLen, err := conn.Read(buffer)
+		if err != nil {
+			fmt.Println(err)
+			conn.Close()
+			break
+		}
 
+		json.Unmarshal(buffer[:readLen], &information)
+		token := information.Token
+		switch information.Event {
+		case NOTICE_EVENT:
+
+		case BROADCAST_EVENT:
+
+		case REGISTER_EVENT:
+			pool.Workers[token] = conn
+		case LOGOUT_EVENT:
+			delete(pool.Workers, token)
+			conn.Close()
+		}
 	}
 }

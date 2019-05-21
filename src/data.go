@@ -8,7 +8,8 @@ import (
 const (
 	NOTICE_EVENT    = "notice"
 	BROADCAST_EVENT = "broadcast"
-	SHUT_EVENT      = "close"
+	REGISTER_EVENT  = "register"
+	LOGOUT_EVENT    = "logout"
 )
 
 type ServerConfig struct {
@@ -38,4 +39,5 @@ type Information struct {
 	Event   string
 	Token   string
 	Message string
+	Data    map[string]interface{}
 }
