@@ -15,7 +15,7 @@ func Dispatch(config *ServerConfig) {
 	TPool.Workers = make(map[string]net.Conn)
 	WPool = new(WebsocketPool)
 	WPool.Workers = make(map[string]*websocket.Conn)
-	WG.Add(2)
+	WG.Add(1)
 	go TcpWorker(config)
 	go WebWorker(config)
 

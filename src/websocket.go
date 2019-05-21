@@ -22,6 +22,8 @@ func handle(ws *websocket.Conn) {
 			ws.Close()
 			break
 		}
+		fmt.Println(string(data))
+
 		information := *new(Information)
 		json.Unmarshal(data, &information)
 		token := information.Token

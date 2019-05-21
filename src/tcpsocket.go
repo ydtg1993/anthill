@@ -30,6 +30,7 @@ func tcpHandle(conn net.Conn) {
 			conn.Close()
 			break
 		}
+		fmt.Println(string(buffer))
 
 		json.Unmarshal(buffer[:readLen], &information)
 		token := information.Token
