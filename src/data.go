@@ -36,7 +36,7 @@ type WebsocketPool struct {
 }
 
 type Information struct {
-	Event   string
-	Token   string
-	Message string
+	Event   string `json:"event"`
+	Token   string `json:"token"`
+	Message string `json:"message"`
 }
