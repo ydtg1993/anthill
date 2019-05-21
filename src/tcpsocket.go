@@ -6,11 +6,11 @@ import (
 	"net"
 )
 
-func TcpWorker(config *ServerConfig, tcpPool *TcpPool, websocketPool *WebsocketPool) {
+func TcpWorker(config *ServerConfig) {
 	tcpServer, _ := net.ResolveTCPAddr("tcp4", config.Tcp.Pattern+":"+config.Tcp.Port)
 	listener, _ := net.ListenTCP("tcp4", tcpServer)
 
-	tcpPool.Workers = make(map[string]net.Conn)
+	TPool.Workers = make(map[string]net.Conn)
 
 	for {
 		conn, err := listener.Accept()
@@ -18,11 +18,11 @@ func TcpWorker(config *ServerConfig, tcpPool *TcpPool, websocketPool *WebsocketP
 			fmt.Println(err)
 			continue
 		}
-		go tcpHandle(conn, tcpPool, websocketPool)
+		go tcpHandle(conn)
 	}
 }
 
-func tcpHandle(conn net.Conn, tcpPool *TcpPool, websocketPool *WebsocketPool) {
+func tcpHandle(conn net.Conn) {
 	for {
 		information := *new(Information)
 		buffer := make([]byte, 10240)
@@ -38,28 +38,28 @@ func tcpHandle(conn net.Conn, tcpPool *TcpPool, websocketPool *WebsocketPool) {
 		message := information.Message
 		switch information.Event {
 		case NOTICE_EVENT:
-			websocket, ok := websocketPool.Workers[token]
+			websocket, ok := TPool.Workers[token]
 			if ok {
 				websocket.Write([]byte(message))
 			}
 		case BROADCAST_EVENT:
-			for _, websocket := range websocketPool.Workers {
+			for _, websocket := range WPool.Workers {
 				websocket.Write([]byte(message))
 			}
 		case REGISTER_EVENT:
-			tcpPool.Workers[token] = conn
-			websocket, ok := websocketPool.Workers[token]
+			TPool.Workers[token] = conn
+			websocket, ok := WPool.Workers[token]
 			if ok {
 				websocket.Write([]byte(message))
 			}
 		case LOGOUT_EVENT:
-			delete(tcpPool.Workers, token)
+			delete(TPool.Workers, token)
 			conn.Close()
 			//websocket down
-			websocket, ok := websocketPool.Workers[token]
+			websocket, ok := WPool.Workers[token]
 			if ok {
 				websocket.Close()
-				delete(websocketPool.Workers, token)
+				delete(WPool.Workers, token)
 			}
 		}
 	}

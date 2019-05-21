@@ -15,10 +15,7 @@ func main() {
 		return
 	}
 
-	tcpPool := *new(src.TcpPool)
-	websocketPool := *new(src.WebsocketPool)
-	go src.TcpWorker(config, &tcpPool, &websocketPool)
-	go src.WebWorker(config, &tcpPool, &websocketPool)
+	src.Dispatch(config)
 }
 
 func getConf() (conf *src.ServerConfig, err error) {
