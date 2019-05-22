@@ -1,6 +1,6 @@
 {
   "tcp": {
-    "pattern": "/",
+    "pattern": "localhost",
     "port": "9303"
   },
   "websocket": {
