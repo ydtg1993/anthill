@@ -2,7 +2,6 @@ package src
 
 import (
 	"golang.org/x/net/websocket"
-	"net"
 )
 
 const (
@@ -28,7 +27,7 @@ type Websocket struct {
 }
 
 type TcpPool struct {
-	Workers map[string]net.Conn
+	Workers map[string]bool
 }
 
 type WebsocketPool struct {

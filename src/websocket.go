@@ -22,40 +22,27 @@ func handle(ws *websocket.Conn) {
 			ws.Close()
 			break
 		}
+		fmt.Println(string(data))
 
 		information := *new(Information)
 		json.Unmarshal(data, &information)
 		token := information.Token
-		message := information.Message
 
 		switch information.Event {
 		case NOTICE_EVENT:
-			socket, ok := TPool.Workers[token]
-			if ok {
-				socket.Write([]byte(message))
-			}
+			//message := information.Message
+			//客户端消息处理 TODO
 		case REGISTER_EVENT:
-			WPool.Workers[token] = ws
-			socket, ok := TPool.Workers[token]
+			_, ok := TPool.Workers[token]
 			if ok {
-				socket.Write([]byte(message))
+				WPool.Workers[token] = ws
+			} else {
+				ws.Close()
+				return
 			}
 		case LOGOUT_EVENT:
 			ws.Close()
 			delete(WPool.Workers, token)
-			//websocket down
-			socket, ok := TPool.Workers[token]
-			if ok {
-				information := Information{
-					Event:   "close",
-					Token:   token,
-					Message: "websocket closed",
-				}
-				message, err := json.Marshal(information)
-				if err == nil {
-					socket.Write(message)
-				}
-			}
 			return
 		}
 	}
